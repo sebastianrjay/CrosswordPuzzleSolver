@@ -2,7 +2,7 @@ require 'nokogiri'
 require 'rest-client'
 
 class Word
-	attr_reader :clue, :length, :letters_remaining, :query
+	attr_reader :clue, :length, :letter_positions, :letters_remaining, :query
 
 	def initialize(options)
 		@clue = options[:clue]
@@ -68,20 +68,26 @@ class Word
 		inspect_str
 	end
 
-	def intersection_positions(puzzle_intersection_positions)
-		@intersection_positions ||= @letter_positions.select do |letter_position, _|
-			puzzle_intersection_positions[letter_position]
+	def intersection_positions(puzzle)
+		@intersection_positions ||= @letter_positions.keys.select do |pos|
+			puzzle.word_positions[pos].length > 1
 		end
 	end
 
-	def set_as_string(string)
+	def intersecting_words(puzzle)
+		@intersecting_words ||= @letter_positions.map do |pos, letter|
+			puzzle.word_positions[pos].find {|word| word != self }
+		end
+	end
+
+	def set_as_string(string, puzzle)
 		x_start, y_start = @start_pos
 		x_end, y_end = @end_pos
 		i = 0
 
 		x_start.upto(x_end) do |x_i|
 			y_start.upto(y_end) do |y_i|
-				@letter_positions[[x_i, y_i]] = string[i]
+				puzzle.set_letter([x_i, y_i], string[i])
 				i += 1
 			end
 		end
@@ -91,8 +97,8 @@ class Word
 
 	def set_letter(pos, letter)
 		if solved?
-			puts "\nAre you sure you want to modify the solved word(s) at this 
-position? (y/n)"
+			puts "\nAre you sure you want to modify the solved word(s) at the 
+position #{pos}? (y/n)"
 	    input = gets.chomp
 	    return unless input.downcase == "y"
 	  end
