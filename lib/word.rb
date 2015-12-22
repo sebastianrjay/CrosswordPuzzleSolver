@@ -81,7 +81,7 @@ class Word
 
 		x_start.upto(x_end) do |x_i|
 			y_start.upto(y_end) do |y_i|
-				puzzle.set_letter([x_i, y_i], string[i])
+				puzzle.set_letter([x_i, y_i], string[i], true)
 				i += 1
 			end
 		end
@@ -91,12 +91,16 @@ class Word
 
 	def set_letter(pos, letter)
 		if solved?
-			puts "\nAre you sure you want to modify the solved word(s) at the 
-position #{pos}? (y/n)"
+			puts "\nAre you sure you want to modify the solved word #{self.inspect} at 
+the position #{pos}? (y/n)"
 	    input = gets.chomp
 	    return unless input.downcase == "y"
 	  end
 		
+		set_letter!(pos, letter)
+	end
+
+	def set_letter!(pos, letter)
 		if @letter_positions[pos]
 			@letter_positions[pos] = letter
 		else

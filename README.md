@@ -12,7 +12,8 @@ CrosswordPuzzleSolver root directory in the terminal and enter `bundle install`.
 
 To run the puzzle solver, enter `ruby lib/game.rb` from the 
 CrosswordPuzzleSolver root directory. Follow the on-screen directions to solve 
-the puzzle yourself, or have the computer solve your puzzle at any time.
+the puzzle yourself, or have the computer solve your puzzle at any time. (To 
+have the computer solve the puzzle, enter '$' at any time while playing.)
 
 To create your own puzzle with a different layout and clues, simply create 
 additional clues and layout .txt files, saved under whichever name you want in 
