@@ -5,9 +5,9 @@ module CrosswordFileParser
 		@clues[:across], @clues[:down] = {}, {}
 
 		File.open(clues_filename).readlines.each do |raw_line|
-			next if raw_line == "\n"
-			
 			line = raw_line.strip
+
+			next if line == ""
 
 			if line =~ /.?[Aa][Cc][Rr][Oo][Ss][Ss].?/
 				setting_across, setting_down = true, false
