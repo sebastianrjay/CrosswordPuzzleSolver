@@ -68,6 +68,12 @@ class Word
 		inspect_str
 	end
 
+	def intersection_positions(puzzle_intersection_positions)
+		@intersection_positions ||= @letter_positions.select do |letter_position, _|
+			puzzle_intersection_positions[letter_position]
+		end
+	end
+
 	def set_as_string(string)
 		x_start, y_start = @start_pos
 		x_end, y_end = @end_pos
