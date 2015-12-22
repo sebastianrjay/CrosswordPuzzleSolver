@@ -74,12 +74,6 @@ class Word
 		end
 	end
 
-	def intersecting_words(puzzle)
-		@intersecting_words ||= @letter_positions.map do |pos, letter|
-			puzzle.word_positions[pos].find {|word| word != self }
-		end
-	end
-
 	def set_as_string(string, puzzle)
 		x_start, y_start = @start_pos
 		x_end, y_end = @end_pos
