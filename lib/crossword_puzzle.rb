@@ -50,8 +50,8 @@ position? #{pos} (y/n)"
 		max_search_results_count = 5
 		current_search_results_count, database_name = 1, :crossword_giant
 
-		# This is a greedy algorithm; current_search_results_count defines the 
-		# maximum greediness of solve_with_database.
+		# This is a greedy algorithm; a lower value of current_search_results_count 
+		# increases greediness, while a higher value decreases greediness.
 		until current_search_results_count > max_search_results_count
 			if solve_with_database(database_name, current_search_results_count)
 				# We've solved the puzzle! In programmer-speak, 'we' means 'computer'.
@@ -139,8 +139,8 @@ position? #{pos} (y/n)"
 			# match, we need to make the algorithm less greedy and increase 
 			# max_search_len. If we found a match, then we reset max_search_len to 1 
 			# because we've narrowed down our solution constraints by one additional 
-			# solved word, and we may be able to prefer solving a word that now only 
-			# has one matching database search result.
+			# solved word, and we may be able to greedily prefer solving a word that 
+			# now only has one matching database search result.
 			found_match ? max_search_len = 1 : max_search_len += 1
 			found_match = false
 
