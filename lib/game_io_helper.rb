@@ -14,7 +14,8 @@ time to quit.\n\n"
 	def get_file_path(file_type)
 		puts "\nPlease enter the relative path to your #{file_type} text file, from 
 the CrosswordPuzzleSolver root directory. If you have a '#{file_type}.txt' file 
-saved in the CrosswordPuzzleSolver root directory, simply enter '#{file_type}.txt'\n"
+saved in the CrosswordPuzzleSolver root directory, simply enter '#{file_type}.txt'
+\n"
 
 		begin
 			path = gets.chomp
