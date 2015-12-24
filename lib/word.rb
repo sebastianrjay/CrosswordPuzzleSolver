@@ -113,13 +113,13 @@ the position #{pos}? (y/n)"
 		@letters_remaining == 0
 	end
 
-	def valid_solutions(crossword_heaven_solutions_are_insufficient)
+	def valid_solutions(crossword_giant_solutions_are_insufficient)
 		regex = as_regex
 
-		if crossword_heaven_solutions_are_insufficient
-			crossword_giant_solutions.select {|word| word =~ regex }
-		else
+		if crossword_giant_solutions_are_insufficient
 			crossword_heaven_solutions.select {|word| word =~ regex }
+		else
+			crossword_giant_solutions.select {|word| word =~ regex }
 		end
 	end
 
@@ -145,7 +145,7 @@ the position #{pos}? (y/n)"
 		end
 
 		def crossword_heaven_solutions
-			url = 'http://www.crosswordheaven.com/search?clue=&answer='
+			url = 'http://crosswordheaven.com/search/result?clue=&answer='
 			web_solutions("ch_solutions", url, 0, 2)
 		end
 

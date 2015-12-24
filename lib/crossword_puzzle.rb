@@ -48,7 +48,7 @@ position? #{pos} (y/n)"
 		# max_search_results_count is a totally arbitrary number. I never saw the 
 		# websites return more than 4 usable results for a given clue query.
 		max_search_results_count = 5
-		current_search_results_count, database_name = 1, :crossword_heaven
+		current_search_results_count, database_name = 1, :crossword_giant
 
 		# This is a greedy algorithm; current_search_results_count defines the 
 		# maximum greediness of solve_with_database.
@@ -61,9 +61,9 @@ position? #{pos} (y/n)"
 			current_search_results_count += 1
 
 			if current_search_results_count > max_search_results_count && 
-					database_name == :crossword_heaven
+					database_name == :crossword_giant
 				current_search_results_count = 1
-				database_name = :crossword_giant
+				database_name = :crossword_heaven
 			end
 		end
 
@@ -79,7 +79,7 @@ position? #{pos} (y/n)"
 
 				# Have no fear! Word#valid_solutions caches database results, and 
 				# narrows itself down as we fill in letters thanks to Word#as_regex.
-				if database_name == :crossword_heaven
+				if database_name == :crossword_giant
 					word_solutions = word.valid_solutions(false)
 				else
 					word_solutions = word.valid_solutions(true)
@@ -97,6 +97,8 @@ position? #{pos} (y/n)"
 						str_idx = 0
 						previous_j, previous_k = word.intersection_positions(self).first
 
+						# This loop checks to see if current_solution conflicts with any 
+						# solved or incomplete words that intersect with the current word.
 						word.intersection_positions(self).each do |pos|
 							j, k = pos
 							# One of the values in this array is always 0
@@ -104,8 +106,9 @@ position? #{pos} (y/n)"
 							str_idx += increment
 							other_word = word_positions[pos].find {|word| word != self }
 
-							# The current solution conflicts with an existing word. We won't 
-							# set the current word to the current solution.
+							# The current_solution conflicts with an existing word, so we 
+							# stop searching for a conflict. We won't set the current word to 
+							# the current solution, because there's a conflict.
 							if other_word.letter_positions[pos] && 
 									other_word.letter_positions[pos] != current_solution[str_idx]
 								has_conflicts = true
@@ -115,7 +118,8 @@ position? #{pos} (y/n)"
 							previous_j, previous_k = j, k
 						end
 
-						# No conflict? Great, move on! Otherwise, keep searching solutions
+						# No conflict? Great, let's move on and set the current word as the 
+						# current solution! Otherwise, let's keep searching solutions
 						break unless has_conflicts
 
 						i += 1
@@ -131,16 +135,18 @@ position? #{pos} (y/n)"
 			end
 
 			# We just finished iterating through all the words in the puzzle, checking 
-			# max_search_len solutions per iteration. If we didn't find a match, we 
-			# need to make the algorithm less greedy and increase max_search_len.
-			# If we found a match, then we set max_search_len to 1 because we've 
-			# narrowed down our solution constraints by one additional solved word.
+			# at most max_search_len solutions per iteration. If we didn't find a 
+			# match, we need to make the algorithm less greedy and increase 
+			# max_search_len. If we found a match, then we reset max_search_len to 1 
+			# because we've narrowed down our solution constraints by one additional 
+			# solved word, and we may be able to prefer solving a word that now only 
+			# has one matching database search result.
 			found_match ? max_search_len = 1 : max_search_len += 1
 			found_match = false
 
 			# We've increased max_search_len to the limit and still haven't found any 
-			# new solutions. Return false; we were unable to solve the puzzle using 
-			# the database specified by database_name.
+			# new valid solutions. Return false; we were unable to solve the puzzle 
+			# using the database specified by database_name.
 			return false if max_search_len > limit
 		end
 
