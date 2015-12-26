@@ -8,7 +8,7 @@ class Word
 		@clue = options[:clue]
 		@query = clue[:text].gsub(/(\d+\.|\d+\)|\d)/, '').strip.gsub(' ', '+')
 		@start_pos, @end_pos = options[:start_pos], options[:end_pos]
-		set_letter_positions
+		set_letter_positions!
 		@length = @letter_positions.length
 		@letters_remaining, @cg_solutions, @ch_solutions = @length, nil, nil
 	end
@@ -127,7 +127,17 @@ the position #{pos}? (y/n)"
 
 		attr_accessor :cg_solutions, :ch_solutions
 
-		def set_letter_positions
+		def crossword_giant_solutions
+			url = 'http://www.crosswordgiant.com/search?clue='
+			web_solutions("cg_solutions", url, 2, 3)
+		end
+
+		def crossword_heaven_solutions
+			url = 'http://crosswordheaven.com/search/result?clue=&answer='
+			web_solutions("ch_solutions", url, 0, 2)
+		end
+
+		def set_letter_positions!
 			x_start, y_start = @start_pos
 			x_end, y_end = @end_pos
 			@letter_positions = {}
@@ -137,16 +147,6 @@ the position #{pos}? (y/n)"
 					@letter_positions[[x_i, y_i]] = nil
 				end
 			end
-		end
-
-		def crossword_giant_solutions
-			url = 'http://www.crosswordgiant.com/search?clue='
-			web_solutions("cg_solutions", url, 2, 3)
-		end
-
-		def crossword_heaven_solutions
-			url = 'http://crosswordheaven.com/search/result?clue=&answer='
-			web_solutions("ch_solutions", url, 0, 2)
 		end
 
 		def web_solutions(cached_instance_var, url, offset, modulo)
