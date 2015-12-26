@@ -32,6 +32,32 @@ position? #{pos} (y/n)"
 		@words_remaining += previously_solved_word_count
 	end
 
+	def has_conflict?(word, current_solution)
+		str_idx = 0
+		previous_j, previous_k = word.intersection_positions(self).first
+
+		# This loop checks to see if current_solution conflicts with any 
+		# solved or incomplete words that intersect with the current word.
+		word.intersection_positions(self).each do |pos|
+			j, k = pos
+			# One of the values in this array is always 0
+			increment = [j - previous_j, k - previous_k].max
+			str_idx += increment
+			other_word = word_positions[pos].find {|new_word| word != new_word }
+
+			# The current_solution conflicts with a word intersecting with the current 
+			# word, so we return true.
+			if other_word.letter_positions[pos] && 
+					other_word.letter_positions[pos] != current_solution[str_idx]
+				return true
+			end
+
+			previous_j, previous_k = j, k
+		end
+
+		false
+	end
+
 	def set_letter(pos, letter, force = false)
 		return nil unless @word_positions[pos]
 
@@ -91,41 +117,18 @@ position? #{pos} (y/n)"
 				# solve algorithm, we increase max_search_len so that we can set more 
 				# ambiguous solutions, whose correctness is less likely.
 				if word_solutions.length > 0 && word_solutions.length <= max_search_len
-					i, has_conflicts = 0, true
+					i, has_conflict = 0, true
 					until i == word_solutions.length
-						current_solution, has_conflicts = word_solutions[i], false
-						str_idx = 0
-						previous_j, previous_k = word.intersection_positions(self).first
-
-						# This loop checks to see if current_solution conflicts with any 
-						# solved or incomplete words that intersect with the current word.
-						word.intersection_positions(self).each do |pos|
-							j, k = pos
-							# One of the values in this array is always 0
-							increment = [j - previous_j, k - previous_k].max
-							str_idx += increment
-							other_word = word_positions[pos].find {|word| word != self }
-
-							# The current_solution conflicts with an existing word, so we 
-							# stop searching for a conflict. We won't set the current word to 
-							# the current solution, because there's a conflict.
-							if other_word.letter_positions[pos] && 
-									other_word.letter_positions[pos] != current_solution[str_idx]
-								has_conflicts = true
-								break
-							end
-
-							previous_j, previous_k = j, k
-						end
+						has_conflict = has_conflict?(word, word_solutions[i])
 
 						# No conflict? Great, let's move on and set the current word as the 
 						# current solution! Otherwise, let's keep searching solutions
-						break unless has_conflicts
+						break unless has_conflict
 
 						i += 1
 					end
 
-					unless has_conflicts
+					unless has_conflict
 						# Set the current word as the current solution only if there is no 
 						# conflict.
 						word.set_as_string(word_solutions[i], self)
