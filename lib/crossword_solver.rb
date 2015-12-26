@@ -8,10 +8,10 @@ module CrosswordSolver
 		# solved or incomplete words that intersect with the current word.
 		word.intersection_positions(self).each do |pos|
 			j, k = pos
-			# One of the values in this array is always 0
+			# At least one of the values in this array is always 0.
 			increment = [j - previous_j, k - previous_k].max
 			str_idx += increment
-			other_word = word_positions[pos].find {|new_word| word != new_word }
+			other_word = word_positions[pos].find {|new_word| new_word != word }
 
 			# The current_solution conflicts with a word intersecting with the current 
 			# word, so we return true.
@@ -73,22 +73,14 @@ module CrosswordSolver
 				# solve algorithm, we increase max_search_len so that we can set more 
 				# ambiguous solutions, whose correctness is less likely.
 				if word_solutions.length > 0 && word_solutions.length <= max_search_len
-					i, has_conflict = 0, true
-					until i == word_solutions.length
-						has_conflict = has_conflict?(word, word_solutions[i])
-
+					0.upto(word_solutions.length - 1) do |i|
 						# No conflict? Great, let's move on and set the current word as the 
 						# current solution! Otherwise, let's keep searching solutions
-						break unless has_conflict
-
-						i += 1
-					end
-
-					unless has_conflict
-						# Set the current word as the current solution only if there is no 
-						# conflict.
-						word.set_as_string(word_solutions[i], self)
-						found_match = true
+						unless has_conflict?(word, word_solutions[i])
+							word.set_as_string(word_solutions[i], self)
+							found_match = true
+							break
+						end
 					end
 				end
 			end
