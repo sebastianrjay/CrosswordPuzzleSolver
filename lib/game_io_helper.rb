@@ -22,7 +22,7 @@ saved in the CrosswordPuzzleSolver root directory, simply enter '#{file_type}.tx
 
 			unless path =~ /.+(.txt)/
 				msg = "\nYour #{file_type} file must be in text (.txt) format. Please 
-fix the clues file and restart the game.\n"
+fix the #{file_type} file and restart the game.\n"
 
 				puts msg
 				exit
