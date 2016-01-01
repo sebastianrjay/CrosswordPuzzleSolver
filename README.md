@@ -1,10 +1,10 @@
-# ABOUT
+# About
 
 This app lets you write your own crossword puzzle and play it, or have the 
 computer solve it for you at any time while playing. An example crossword puzzle 
 is provided in the `clues.txt` and `layout.txt` files.
 
-# DIRECTIONS
+# Directions
 
 Assuming you've [installed Ruby](https://github.com/rbenv/rbenv) and then 
 installed bundler via `gem install bundler`, navigate to the 
