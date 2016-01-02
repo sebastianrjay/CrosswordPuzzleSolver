@@ -1,10 +1,10 @@
 module CrosswordSolver
 
-	def has_conflict?(word, current_solution)
+	def has_conflict?(word, solution_string)
 		str_idx = 0
 		previous_j, previous_k = word.intersection_positions(self).first
 
-		# This loop checks to see if current_solution conflicts with any 
+		# This loop checks to see if solution_string conflicts with any 
 		# solved or incomplete words that intersect with the current word.
 		word.intersection_positions(self).each do |pos|
 			j, k = pos
@@ -13,10 +13,10 @@ module CrosswordSolver
 			str_idx += increment
 			other_word = word_positions[pos].find {|new_word| new_word != word }
 
-			# The current_solution conflicts with a word intersecting with the current 
+			# The solution_string conflicts with a word intersecting with the current 
 			# word, so we return true.
 			if other_word.letter_positions[pos] && 
-					other_word.letter_positions[pos] != current_solution[str_idx]
+					other_word.letter_positions[pos] != solution_string[str_idx]
 				return true
 			end
 
