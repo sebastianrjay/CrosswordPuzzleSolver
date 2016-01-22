@@ -73,7 +73,7 @@ fix the #{file_type} file and restart the game.\n"
 above.\n\n"
     else
       puts "\n\nThe computer was unable to solve your puzzle. Its best effort is  
-printed above.\n"
+printed above.\n\n"
     end
 
     exit
