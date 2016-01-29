@@ -60,7 +60,7 @@ module CrosswordSolver
 				next if word.solved?
 
 				# Have no fear! Word#valid_solutions caches database results, and 
-				# narrows itself down as we fill in letters thanks to Word#as_regex.
+				# narrows itself down as we fill in letters thanks to Word#to_regex.
 				if database_name == :crossword_giant
 					word_solutions = word.valid_solutions(false)
 				else

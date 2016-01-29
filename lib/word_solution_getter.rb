@@ -2,7 +2,7 @@ module WordSolutionGetter
 
 	# Returns a match regex for the word's current letters, so that we can filter 
 	# the word's clue's database search results against the letters we have so far
-	def as_regex
+	def to_regex
 		return Regexp.new("") if blank?
 
 		# Building the regex takes O(word_length) time, so I always cache the result 
@@ -26,7 +26,7 @@ module WordSolutionGetter
 	end
 
 	def valid_solutions(crossword_giant_solutions_are_insufficient)
-		regex = as_regex
+		regex = to_regex
 
 		if crossword_giant_solutions_are_insufficient
 			crossword_heaven_solutions.select {|word| word =~ regex }
@@ -56,7 +56,7 @@ module WordSolutionGetter
 
 			query_insertion_idx = url.index('=')
 			response = RestClient.get(url.insert(query_insertion_idx + 1, query)).body
-			regex = as_regex
+			regex = to_regex
 
 			solutions = Nokogiri::HTML(response).css("td > a")
 				.map(&:content).select.with_index do |str, i| 
