@@ -99,9 +99,7 @@ printed above.\n\n"
           clue_idx = 0 if pos == (current_words[0].clue[:position] rescue nil)
           clue_idx = 1 if pos == (current_words[1].clue[:position] rescue nil)
 
-          if clue_idx > -1
-            text = " #{current_words[clue_idx].clue[:number]} "
-          end
+          text = " #{current_words[clue_idx].clue[:number]} " if clue_idx > -1
           
     			print text.black.colorize(background: :light_cyan)
     		else

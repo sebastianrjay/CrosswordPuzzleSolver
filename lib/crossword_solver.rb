@@ -75,7 +75,7 @@ module CrosswordSolver
 				if word_solutions.length > 0 && word_solutions.length <= max_search_len
 					0.upto(word_solutions.length - 1) do |i|
 						# No conflict? Great, let's move on and set the current word as the 
-						# current solution! Otherwise, let's keep searching solutions
+						# current solution! Otherwise, let's keep searching solutions.
 						unless has_conflict?(word, word_solutions[i])
 							word.set_as_string(word_solutions[i], self)
 							found_match = true
