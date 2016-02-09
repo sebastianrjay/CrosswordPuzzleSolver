@@ -4,11 +4,11 @@ This command line app lets you write your own crossword puzzle and play it, or
 have the computer solve it for you at any time while playing. An example 
 crossword puzzle is provided in the `clues.txt` and `layout.txt` files.
 
-I originally wrote this app as a coding challenge submission for one of the 
-major tech companies, and it landed me the on-site interview. I had several 
-subsequent interviews, but was ultimately rejected for the position. While they 
-do not want us to post the assignment itself publicly, we are allowed to post 
-our solutions on Github.
+I originally wrote this app in 3 days as a coding challenge submission for one 
+of the major tech companies, and it landed me the on-site interview. I had 
+several subsequent interviews, but was ultimately rejected for the position. 
+While they do not want us to post the assignment itself publicly, we are allowed 
+to post our solutions on Github.
 
 # Directions
 
