@@ -6,7 +6,7 @@ module WordSolutionGetter
 		return Regexp.new("") if blank?
 
 		# Building the regex takes O(word_length) time, so I always cache the result 
-		# of this method when using it.
+		# of this method in a variable when using it.
 		x_start, y_start = @start_pos
 		x_end, y_end = @end_pos
 		regex_str = ""
