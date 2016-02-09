@@ -5,10 +5,15 @@ have the computer solve it for you at any time while playing. An example
 crossword puzzle is provided in the `clues.txt` and `layout.txt` files.
 
 I originally wrote this app in 3 days as a coding challenge submission for one 
-of the major tech companies, and it landed me the on-site interview. I had 
-several subsequent interviews but was ultimately rejected for the position. 
-While they do not want us to post the assignment itself publicly, we are allowed 
-to post our solutions on Github.
+of the major tech companies, and it landed me the on-site interview. While 
+candidates were forbidden from posting the assignment itself publicly, its 
+directions explicitly instructed us to post our solutions on Github.
+
+NOTE: If you are a representative of the unnamed tech company above and would 
+like me to remove this app from public display on my Github profile, please 
+write to me at sebastianrjay@gmail.com. I'm surprised at the instructions to 
+post our solutions publicly, given that this particular assignment may be used 
+in other interview processes.
 
 # Directions
 
