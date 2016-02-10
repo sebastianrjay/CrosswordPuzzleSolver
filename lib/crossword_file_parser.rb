@@ -1,7 +1,7 @@
 module CrosswordFileParser
 
 	def parse_clues_file(clues_filename)
-		@clues, setting_across, setting_down = {}, false, false
+		@clues, setting_across = {}, false
 		@clues[:across], @clues[:down] = {}, {}
 
 		File.open(clues_filename).readlines.each do |raw_line|
@@ -10,10 +10,10 @@ module CrosswordFileParser
 			next if line == ""
 
 			if line =~ /.?[Aa][Cc][Rr][Oo][Ss][Ss].?/
-				setting_across, setting_down = true, false
+				setting_across = true
 				next
 			elsif line =~ /.?[Dd][Oo][Ww][Nn].?/
-				setting_across, setting_down = false, true
+				setting_across = false
 				next
 			end
 
@@ -23,7 +23,7 @@ module CrosswordFileParser
 			if setting_across
 				@clues[:across][number] = {}
 				@clues[:across][number][:text] = clue
-			elsif setting_down
+			else
 				@clues[:down][number] = {}
 				@clues[:down][number][:text] = clue
 			end
