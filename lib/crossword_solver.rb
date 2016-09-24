@@ -73,11 +73,11 @@ module CrosswordSolver
 				# solve algorithm, we increase max_search_len so that we can set more 
 				# ambiguous solutions, whose correctness is less likely.
 				if word_solutions.length > 0 && word_solutions.length <= max_search_len
-					0.upto(word_solutions.length - 1) do |i|
+					word_solutions.each do |word_solution|
 						# No conflict? Great, let's move on and set the current word as the 
 						# current solution! Otherwise, let's keep searching solutions.
-						unless has_conflict?(word, word_solutions[i])
-							word.set_as_string(word_solutions[i], self)
+						unless has_conflict?(word, word_solution)
+							word.set_as_string(word_solution, self)
 							found_match = true
 							break
 						end
