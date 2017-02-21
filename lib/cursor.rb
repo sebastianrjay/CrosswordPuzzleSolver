@@ -6,7 +6,7 @@ class Cursor
     @puzzle_width, @puzzle_height = puzzle_width, puzzle_height
   end
 
-  def move(direction)
+  def move!(direction)
     case direction
     when "up"
       @position = position[0] - 1, position[1]
@@ -18,10 +18,10 @@ class Cursor
       @position = position[0], position[1] + 1
     end
 
-    force_in_bounds
+    force_in_bounds!
   end
 
-  def force_in_bounds
+  def force_in_bounds!
     position[0] = 0 if position[0] >= @puzzle_width
     position[0] = @puzzle_width - 1 if position[0] < 0
 

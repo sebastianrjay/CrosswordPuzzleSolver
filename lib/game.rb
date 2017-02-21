@@ -25,17 +25,17 @@ class Game
 			when "\177" # BACKSPACE
 				puzzle.delete_letter(cursor.position)
 			when "\e[A" # UP ARROW
-        cursor.move("up")
+        cursor.move!("up")
       when "\e[B" # DOWN
-        cursor.move("down")
+        cursor.move!("down")
       when "\e[C" # RIGHT
-        cursor.move("right")
+        cursor.move!("right")
       when "\e[D" # LEFT
-        cursor.move("left")
+        cursor.move!("left")
 			when "$"
 				puts "\nHang tight! The computer is solving your puzzle as fast as it can.\n\n"
-				solved = puzzle.solve!
-				render_computer_solution(solved)
+				is_solved = puzzle.solve!
+				render_computer_solution(is_solved)
       when "\e" # ESCAPE
         puts "\nAre you sure you want to exit the game? (y/n)"
         exit if gets.chomp == "y"

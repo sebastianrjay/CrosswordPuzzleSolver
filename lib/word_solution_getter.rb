@@ -1,7 +1,27 @@
 module WordSolutionGetter
 
+	SOLUTION_WEBSITE_NAMES = [
+		CROSSWORD_GIANT = :crossword_giant,
+		CROSSWORD_HEAVEN = :crossword_heaven
+	]
+
+	SOLUTION_SEARCH_URLS = {
+		CROSSWORD_GIANT => 'http://www.crosswordgiant.com/search?clue=',
+		CROSSWORD_HEAVEN => 'http://crosswordheaven.com/search/result?clue=&answer='
+	}
+
+	SOLUTION_TABLE_OFFSETS = {
+		CROSSWORD_GIANT => 2,
+		CROSSWORD_HEAVEN => 0
+	}
+
+	SOLUTION_TABLE_WIDTHS = {
+		CROSSWORD_GIANT => 3,
+		CROSSWORD_HEAVEN => 2
+	}
+
 	# Returns a match regex for the word's current letters, so that we can filter 
-	# the word's clue's database search results against the letters we have so far
+	# the word's clue's website search results against the letters we have so far
 	def to_regex
 		return Regexp.new("") if blank?
 
@@ -25,45 +45,37 @@ module WordSolutionGetter
 		Regexp.new(regex_str)
 	end
 
-	def valid_solutions(crossword_giant_solutions_are_insufficient)
+	def valid_solutions(website_name)
 		regex = to_regex
 
-		if crossword_giant_solutions_are_insufficient
-			crossword_heaven_solutions.select {|word| word =~ regex }
-		else
-			crossword_giant_solutions.select {|word| word =~ regex }
-		end
+		web_solutions(website_name).select {|word| word =~ regex }
 	end
 
 	private
 
-		attr_accessor :cg_solutions, :ch_solutions
+		attr_accessor :crossword_giant_solutions, :crossword_heaven_solutions
 
-		def crossword_giant_solutions
-			url = 'http://www.crosswordgiant.com/search?clue='
-			web_solutions("cg_solutions", url, 2, 3)
-		end
-
-		def crossword_heaven_solutions
-			url = 'http://crosswordheaven.com/search/result?clue=&answer='
-			web_solutions("ch_solutions", url, 0, 2)
-		end
-
-		def web_solutions(solutions_cache_name, url, offset, modulo)
+		def web_solutions(website_name)
 			# Cache them so we only request them over the internet once.
 			# Use valid_solutions to narrow down solutions when we have more letters.
+			solutions_cache_name = "#{website_name}_solutions"
 			return self.send(solutions_cache_name) if self.send(solutions_cache_name)
 
+			url = SOLUTION_SEARCH_URLS[website_name]
+			offset = SOLUTION_TABLE_OFFSETS[website_name]
+			width = SOLUTION_TABLE_WIDTHS[website_name]
+
 			query_insertion_idx = url.index('=')
-			response = RestClient.get(url.insert(query_insertion_idx + 1, query)).body
+			search_url = url.dup.insert(query_insertion_idx + 1, query)
+			response = RestClient.get(search_url).body
 			regex = to_regex
 
 			solutions = Nokogiri::HTML(response).css("td > a")
-				.map(&:content).select.with_index do |str, i| 
+				.map(&:content).select.with_index do |str, idx| 
 					# Checking the regex runs in O(string_length) time, so we do that last
-					(i + offset) % modulo == 0 && str.length == @length && str =~ regex
+					(idx + offset) % width == 0 && str.length == @length && str =~ regex
 				end.uniq
 
-			self.send((solutions_cache_name + "="), solutions)
+			self.send("#{solutions_cache_name}=", solutions)
 		end
 end

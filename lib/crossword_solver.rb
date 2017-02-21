@@ -1,5 +1,7 @@
 module CrosswordSolver
 
+	MAX_SOLUTION_SEARCH_RESULTS_COUNT = 5
+
 	def has_conflict?(word, solution_string)
 		str_idx = 0
 		previous_j, previous_k = word.intersection_positions(self).first
@@ -27,52 +29,35 @@ module CrosswordSolver
 	end
 
 	def solve!
-		# max_search_results_count is a totally arbitrary number. I never saw the 
-		# websites return more than 4 usable results for a given clue query.
-		max_search_results_count = 5
-		current_search_results_count, database_name = 1, :crossword_giant
+		Word::SOLUTION_WEBSITE_NAMES.each do |website_name|
+			# This is a greedy algorithm; it constrains us to first solving words with 
+			# max_allowable_search_len valid solutions, or less. We ignore words with 
+			# more than MAX_SOLUTION_SEARCH_RESULTS_COUNT valid solutions, since the 
+			# validity of those solutions is less certain.
+			max_allowable_search_len = 1
 
-		# This is a greedy algorithm; a lower value of current_search_results_count 
-		# increases greediness, while a higher value decreases greediness.
-		until current_search_results_count > max_search_results_count
-			if solve_with_database(database_name, current_search_results_count)
-				# We've solved the puzzle! In programmer-speak, 'we' means 'computer'.
-				return true
-			end
+			until max_allowable_search_len > MAX_SOLUTION_SEARCH_RESULTS_COUNT
+				if solved_with_website?(website_name, max_allowable_search_len)
+					return true # We've solved the puzzle with website_name!
+				end
 
-			current_search_results_count += 1
-
-			if current_search_results_count > max_search_results_count && 
-					database_name == :crossword_giant
-				current_search_results_count = 1
-				database_name = :crossword_heaven
+				max_allowable_search_len += 1
 			end
 		end
 
 		false
 	end
 
-	def solve_with_database(database_name, limit)
-		found_match, max_search_len = false, 1
+	def solved_with_website?(website_name, max_allowable_search_len)
+		found_match, current_max_search_len = false, 1
 
 		until solved?
 			words.each do |word|
 				next if word.solved?
 
-				# Have no fear! Word#valid_solutions caches database results, and 
-				# narrows itself down as we fill in letters thanks to Word#to_regex.
-				if database_name == :crossword_giant
-					word_solutions = word.valid_solutions(false)
-				else
-					word_solutions = word.valid_solutions(true)
-				end
+				word_solutions = word.valid_solutions(website_name)
 
-				# This is a greedy algorithm. We want to first set the solutions in the 
-				# puzzle where we only found one matching solution, because we're more 
-				# confident that such solutions are correct. As we move along in the 
-				# solve algorithm, we increase max_search_len so that we can set more 
-				# ambiguous solutions, whose correctness is less likely.
-				if word_solutions.length > 0 && word_solutions.length <= max_search_len
+				if word_solutions.any? && word_solutions.count <= current_max_search_len
 					word_solutions.each do |word_solution|
 						# No conflict? Great, let's move on and set the current word as the 
 						# current solution! Otherwise, let's keep searching solutions.
@@ -86,22 +71,22 @@ module CrosswordSolver
 			end
 
 			# We just finished iterating through all the words in the puzzle, checking 
-			# at most max_search_len solutions per iteration. If we didn't find a 
-			# match, we need to make the algorithm less greedy and increase 
-			# max_search_len. If we found a match, then we reset max_search_len to 1 
-			# because we've narrowed down our solution constraints by one additional 
-			# solved word, and we may be able to greedily prefer solving a word that 
-			# now only has one matching database search result.
-			found_match ? max_search_len = 1 : max_search_len += 1
+			# at most current_max_search_len solutions per iteration. If we didn't 
+			# find a match, we need to make the algorithm less greedy and increase 
+			# current_max_search_len. If we found a match, then we reset 
+			# current_max_search_len to 1 because we've narrowed down our solution 
+			# constraints by one additional solved word, and we may be able to 
+			# greedily prefer solving a word that now only has one valid solution.
+			found_match ? current_max_search_len = 1 : current_max_search_len += 1
 			found_match = false
 
-			# We've increased max_search_len to the limit and still haven't found any 
-			# new valid solutions. Return false; we were unable to solve the puzzle 
-			# using the database specified by database_name.
-			return false if max_search_len > limit
+			# We've increased current_max_search_len to the max_allowable_search_len 
+			# and still haven't found any new valid solutions. Return false; we were 
+			# unable to solve the puzzle with this website_name and this
+			# max_allowable_search_len.
+			return false if current_max_search_len > max_allowable_search_len
 		end
 
-		# We solved the puzzle using the database specified by database_name!
 		true
 	end
 end
