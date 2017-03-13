@@ -46,9 +46,9 @@ module WordSolutionGetter
 	end
 
 	def valid_solutions(website_name)
-		regex = to_regex
+		@regex = to_regex
 
-		web_solutions(website_name).select {|word| word =~ regex }
+		web_solutions(website_name).select {|word| word =~ @regex }
 	end
 
 	private
@@ -68,12 +68,12 @@ module WordSolutionGetter
 			query_insertion_idx = url.index('=')
 			search_url = url.dup.insert(query_insertion_idx + 1, query)
 			response = RestClient.get(search_url).body
-			regex = to_regex
+			@regex ||= to_regex
 
 			solutions = Nokogiri::HTML(response).css("td > a")
 				.map(&:content).select.with_index do |str, idx| 
 					# Checking the regex runs in O(string_length) time, so we do that last
-					(idx + offset) % width == 0 && str.length == @length && str =~ regex
+					(idx + offset) % width == 0 && str.length == @length && str =~ @regex
 				end.uniq
 
 			self.send("#{solutions_cache_name}=", solutions)
